@@ -14,6 +14,7 @@ type Specification struct {
 	Port                         int
 	Rate                         float32
 	User                         string
+	Addrs                        []string
 	MultiWordVar                 string
 	MultiWordVarWithAlt          string `envconfig:"MULTI_WORD_VAR_WITH_ALT"`
 	MultiWordVarWithLowerCaseAlt string `envconfig:"multi_word_var_with_lower_case_alt"`
@@ -33,6 +34,7 @@ func TestProcess(t *testing.T) {
 	os.Setenv("ENV_CONFIG_USER", "Kelsey")
 	os.Setenv("SERVICE_HOST", "127.0.0.1")
 	os.Setenv("ENV_CONFIG_REQUIREDVAR", "foo")
+	os.Setenv("ENV_CONFIG_ADDRS", "8.8.8.8,8.8.4.4")
 	err := Process("env_config", &s)
 	if err != nil {
 		t.Error(err.Error())
@@ -54,6 +56,11 @@ func TestProcess(t *testing.T) {
 	}
 	if s.RequiredVar != "foo" {
 		t.Errorf("expected %s, got %s", "foo", s.RequiredVar)
+	}
+	for i, a := range []string{"8.8.8.8", "8.8.4.4"} {
+		if s.Addrs[i] != a {
+			t.Errorf("expected %s, got %s", a, s.Addrs[i])
+		}
 	}
 }
 

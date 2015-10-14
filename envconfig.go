@@ -65,6 +65,21 @@ func Process(prefix string, spec interface{}) error {
 			}
 
 			switch f.Kind() {
+			case reflect.Slice:
+				sl := strings.Split(value, ",")
+
+				tString := reflect.TypeOf(string(""))
+				tStringSlice := reflect.SliceOf(tString)
+				rslice := reflect.MakeSlice(tStringSlice, len(sl), len(sl))
+
+				// Don't know why this doesn't work?
+				//rslice = reflect.AppendSlice(rslice, reflect.ValueOf(sl))
+
+				for i, v := range sl {
+					rslice.Index(i).Set(reflect.ValueOf(v))
+				}
+
+				f.Set(rslice)
 			case reflect.String:
 				f.SetString(value)
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
